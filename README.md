@@ -1,2 +1,2 @@
 # System-Contracts
-This repository hosts system smart contracts of the Bloom Genesis Chain
+This repository hosts system smart contracts of the Hybrid
