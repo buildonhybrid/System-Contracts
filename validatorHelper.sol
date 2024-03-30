@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.19;
 
-
-
 interface InterfaceValidator {
     enum Status {
         // validator not exist, default status
@@ -180,8 +178,7 @@ contract ValidatorHelper is Ownable {
         string calldata email,
         string calldata details
     ) external payable  returns (bool) {
-
-       
+    
 
         require(msg.value >= minimumValidatorStaking, "Please stake minimum validator staking" );
 
@@ -191,7 +188,6 @@ contract ValidatorHelper is Ownable {
 
         return true;
     }
-
 
     function unstake(address validator)
         external
@@ -348,4 +344,4 @@ contract ValidatorHelper is Ownable {
         //this function is for UI compatibility
         return true;
     }
-} 
+}
