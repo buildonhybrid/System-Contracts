@@ -1,0 +1,6 @@
+constructor.outline
+    when initialOwner is address zero
+        it reverts
+    when initialOwner is correct
+        it emits
+        it owner is updated

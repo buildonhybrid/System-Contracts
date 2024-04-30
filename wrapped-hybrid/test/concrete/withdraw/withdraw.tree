@@ -1,0 +1,7 @@
+withdraw.outline
+├── when user try to unwrap amount larger than his balance
+│   └── it reverts
+└── when user call withdraw function with correct balance
+    ├── it emits
+    ├── it wrapped token balance of the user reduced
+    └── it ether balance of the user increased

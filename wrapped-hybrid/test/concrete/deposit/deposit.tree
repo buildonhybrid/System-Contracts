@@ -1,0 +1,8 @@
+deposit.outline
+├── when user send 0 wei to function
+│   └── it wrapped balance of user will be not changed.
+└── when user call deposit function with ether
+    ├── it emits
+    ├── it new wrapped tokens minted
+    ├── it user ether balance reduced
+    └── it contract ether balance increased
