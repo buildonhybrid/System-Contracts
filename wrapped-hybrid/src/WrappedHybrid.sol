@@ -11,7 +11,7 @@ import { IWrappedHybrid } from "src/IWrappedHybrid.sol";
  * @notice An implementation of ERC20 token with wrapper.
  */
 contract WrappedHybrid is ERC20, IWrappedHybrid, Ownable {
-    constructor(address initialOwner) ERC20("WrappedHybrid", "WHD") Ownable(initialOwner) { }
+    constructor(address initialOwner) ERC20("WrappedHybrid", "WHYB") Ownable(initialOwner) { }
 
     /// @inheritdoc IWrappedHybrid
     function withdraw(uint256 amount) external {
