@@ -173,29 +173,31 @@ contract Nodesalebuy is NodesaleTest {
         vm.assume(amount <= nodesale.publicMax(nodeType));
         vm.assume(amount != 0);
 
-        uint256 discount =
-            (nodesale.prices(nodeType) * amount * refferalCode.discountNumerator) / refferalCode.discountDenominator;
+        uint256 price = nodesale.prices(nodeType);
 
-        uint256 ownerPercent = (nodesale.prices(nodeType) * amount * refferalCode.ownerPercentNumerator)
+        uint256 discount =
+            (price * amount * refferalCode.discountNumerator) / refferalCode.discountDenominator;
+
+        uint256 ownerPercent = (price * amount * refferalCode.ownerPercentNumerator)
             / refferalCode.ownerPercentDenominator;
 
         vm.startPrank(alice);
 
         // it emits
         vm.expectEmit(true, true, true, true);
-        emit INodesale.Bought(alice, refferalCode, amount, nodesale.prices(nodeType) * amount - discount - ownerPercent);
+        emit INodesale.Bought(alice, refferalCode, amount, price * amount - discount - ownerPercent);
 
         nodesale.buy(nodeType, amount, refferalCode);
 
         // it user balance reduced by total price minus discount and owner commission
-        assertEq(userBalanceBefore - nodesale.prices(nodeType) * amount + discount, weth.balanceOf(alice));
+        assertEq(userBalanceBefore - price * amount + discount, weth.balanceOf(alice));
 
         // it refferal code owner get commission
         assertEq(refferalCodeOwnerBalanceBefore + ownerPercent, weth.balanceOf(carol));
 
         // it contract balance increased
         assertEq(
-            contractBalanceBefore + nodesale.prices(nodeType) * amount - discount - ownerPercent,
+            contractBalanceBefore + price * amount - discount - ownerPercent,
             weth.balanceOf(address(nodesale))
         );
 

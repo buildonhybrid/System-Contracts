@@ -1,18 +1,4 @@
-## Foundry
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
+# Nodesale
 ## Usage
 
 ### Build
@@ -21,10 +7,15 @@ https://book.getfoundry.sh/
 $ forge build
 ```
 
+### Run Static Analyzer
+```shell
+$ slither . --config-file slither.config.json 
+```
+
 ### Test
 
 ```shell
-$ forge test --via-ir
+$ forge test
 ```
 
 ### Format
@@ -33,34 +24,133 @@ $ forge test --via-ir
 $ forge fmt
 ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
 ### Cast
 
 ```shell
 $ cast <subcommand>
 ```
 
-### Help
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+# Protocol Documentation
+## Functions
+### buy
+
+Main function for buy nodes in public sale.
+
+
+```solidity
+function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) external;
 ```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`nodeType`|`uint8`|Number of the node type.|
+|`amount`|`uint256`|Amount of nodes to be bought in one time.|
+|`refferalCode`|`ReferralCode`|Refferal code which has all attributes for setup discounts.|
+
+
+### withdraw
+
+Withdraw collected wrapped ether by owner.
+
+
+```solidity
+function withdraw(address to) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`to`|`address`|Address which will receive collected tokens.|
+
+
+### pause
+
+*To pause the presale*
+
+
+```solidity
+function pause() external;
+```
+
+### unpause
+
+*To unpause the presale*
+
+
+```solidity
+function unpause() external;
+```
+
+## Events
+### SaleTimeUpdated
+Emits when timestamp of start and end of the sale are updated.
+
+
+```solidity
+event SaleTimeUpdated(uint256 indexed _start, uint256 indexed _end);
+```
+
+### Bought
+Emits when someone bought nodes.
+
+
+```solidity
+event Bought(address indexed user, ReferralCode referralCode, uint256 indexed nodesBought, uint256 amountPaid);
+```
+
+### Withdrawn
+Emits when owner withdraw collected tokens.
+
+
+```solidity
+event Withdrawn(address to, uint256 value);
+```
+
+## Errors
+### InvalidTimestamp
+
+```solidity
+error InvalidTimestamp();
+```
+
+### MaximumLimitReached
+
+```solidity
+error MaximumLimitReached();
+```
+
+### InvalidAmountToBuy
+
+```solidity
+error InvalidAmountToBuy();
+```
+
+### UnacceptableValue
+
+```solidity
+error UnacceptableValue();
+```
+
+### ExceedsMaxAllowedNodesPerUser
+
+```solidity
+error ExceedsMaxAllowedNodesPerUser();
+```
+
+## Structs
+### ReferralCode
+
+```solidity
+struct ReferralCode {
+    address ownerOfReferralCode;
+    bool isWithRefferalCode;
+    uint16 ownerPercentNumerator;
+    uint16 ownerPercentDenominator;
+    uint16 discountNumerator;
+    uint16 discountDenominator;
+    bytes signature;
+}
+```
+
