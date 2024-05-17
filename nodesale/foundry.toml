@@ -6,4 +6,7 @@ libs = ["lib"]
 [fmt]
 bracket_spacing = true
 
+[rpc_endpoints]
+arbitrum_testnet = "https://arbitrum-sepolia.blockpi.network/v1/rpc/public"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

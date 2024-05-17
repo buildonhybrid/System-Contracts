@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import {NodesaleTest} from "test/NodesaleTest.sol";
-import {INodesale} from "src/INodesale.sol";
+import { NodesaleTest } from "test/NodesaleTest.sol";
+import { INodesale } from "src/INodesale.sol";
 
 contract Nodesalewithdraw is NodesaleTest {
     function setUp() external {
@@ -18,12 +18,7 @@ contract Nodesalewithdraw is NodesaleTest {
         vm.prank(alice);
 
         // it reverts
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                Ownable.OwnableUnauthorizedAccount.selector,
-                alice
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, alice));
         nodesale.withdraw(alice);
     }
 
@@ -38,7 +33,7 @@ contract Nodesalewithdraw is NodesaleTest {
         uint256 recipientBalanceBefore = weth.balanceOf(alice);
 
         // it emits
-        vm.expectEmit(true, true, true,true);
+        vm.expectEmit(true, true, true, true);
         emit INodesale.Withdrawn(alice, contractBalanceBefore);
 
         nodesale.withdraw(alice);

@@ -37,7 +37,7 @@ interface INodesale {
     /// @param refferalCode Refferal code which has all attributes for setup discounts.
     function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) external;
 
-    /// @notice Withdraw collected wrapped ether by owner. 
+    /// @notice Withdraw collected wrapped ether by owner.
     /// @param to Address which will receive collected tokens.
     function withdraw(address to) external;
 
