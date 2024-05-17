@@ -2,7 +2,21 @@
 pragma solidity 0.8.24;
 
 interface INodesale {
+    struct ReferralCode {
+        address ownerOfReferralCode;
+        bool isWithRefferalCode;
+        uint16 ownerPercentNumerator;
+        uint16 ownerPercentDenominator;
+        uint16 discountNumerator;
+        uint16 discountDenominator;
+        bytes signature;
+    }
+
+    /// @notice Emits when timestamp of start and end of the sale are updated.
     event SaleTimeUpdated(uint256 indexed _start, uint256 indexed _end);
+
+    /// @notice Emits when someone bought nodes.
+    event Bought(address indexed user, ReferralCode referralCode, uint256 indexed nodesBought, uint256 amountPaid);
 
     error InvalidTimestamp();
 
@@ -14,5 +28,19 @@ interface INodesale {
 
     error ExceedsMaxAllowedNodesPerUser();
 
-    function buy(uint8 nodeType, uint256 amount, bytes32 referralCode) external;
+    /// @notice Main function for buy nodes in public sale.
+    /// @param nodeType Number of the node type.
+    /// @param amount Amount of nodes to be bought in one time.
+    /// @param refferalCode Refferal code which has all attributes for setup discounts.
+    function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) external;
+
+    /**
+     * @dev To pause the presale
+     */
+    function pause() external;
+
+    /**
+     * @dev To unpause the presale
+     */
+    function unpause() external;
 }

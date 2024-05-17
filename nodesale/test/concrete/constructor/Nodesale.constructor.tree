@@ -1,0 +1,21 @@
+Nodesale.Constructor
+├── when start timestamp is less than block timestamp
+│   └── it reverts
+├── when end timestamp equals start timestamp
+│   └── it reverts
+├── when start timestamp is higher than end timestamp
+│   └── it reverts
+├── when length of price array equals zero
+│   └── it reverts
+├── when max amounts array length equals zero
+│   └── it reverts
+├── when whitelist max array length equals zero
+│   └── it reverts
+├── when public max array length equals zero
+│   └── it reverts
+├── when weth address equals zero
+│   └── it reverts
+└── when all arguments are correct
+    ├── it emits
+    ├── it owner is set correct
+    └── it state is updated
