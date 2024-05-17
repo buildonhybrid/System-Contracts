@@ -182,6 +182,17 @@ contract Nodesale is INodesale, Ownable, Pausable {
     }
 
     /// @inheritdoc INodesale
+    function withdraw(address to) external onlyOwner {
+        if(to == address(0)) revert UnacceptableValue();
+
+        uint256 amountToWithdraw = WETH.balanceOf(address(this));
+
+        WETH.safeTransfer(to, amountToWithdraw);
+
+        emit Withdrawn(to, amountToWithdraw);
+    }
+
+    /// @inheritdoc INodesale
     function pause() external onlyOwner {
         _pause();
     }

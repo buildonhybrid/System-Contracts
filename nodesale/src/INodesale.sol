@@ -18,6 +18,9 @@ interface INodesale {
     /// @notice Emits when someone bought nodes.
     event Bought(address indexed user, ReferralCode referralCode, uint256 indexed nodesBought, uint256 amountPaid);
 
+    /// @notice Emits when owner withdraw collected tokens.
+    event Withdrawn(address to, uint256 value);
+
     error InvalidTimestamp();
 
     error MaximumLimitReached();
@@ -33,6 +36,10 @@ interface INodesale {
     /// @param amount Amount of nodes to be bought in one time.
     /// @param refferalCode Refferal code which has all attributes for setup discounts.
     function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) external;
+
+    /// @notice Withdraw collected wrapped ether by owner. 
+    /// @param to Address which will receive collected tokens.
+    function withdraw(address to) external;
 
     /**
      * @dev To pause the presale

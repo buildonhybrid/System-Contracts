@@ -1,0 +1,9 @@
+Nodesale.withdraw
+├── when not owner try to withdraw tokens
+│   └── it reverts
+├── when recipient equals address zero
+│   └── it reverts
+└── when owner withdraw tokens
+    ├── it emits
+    ├── it contract balance is reduced to zero
+    └── it recipient balance is increased by collected tokens
