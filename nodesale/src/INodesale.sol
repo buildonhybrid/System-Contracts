@@ -53,7 +53,7 @@ interface INodesale {
     /// @param amount Amount of nodes to be bought in one time.
     /// @param referralCode Referral code which has all attributes for setup discounts.
     /// @param proof Merkle Proofs for verify leafs. 
-    /// @param leaf Leaf from proofs for given user.
+    /// @param leaf Leaf from proofs for given user in format encoded "{address}, {amount}".
     function whitelistBuy(
         uint8 nodeType,
         uint256 amount,

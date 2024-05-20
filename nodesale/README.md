@@ -1,6 +1,14 @@
 # Nodesale
 ## Usage
 
+### Deploy
+Replace `arbitrum_testnet` with network you need.   
+Replace also `--etherscan-api-key` with you api depends of chain you want to deploy.
+
+```shell
+$ forge clean && forge script script/NodesaleDeploy.s.sol --rpc-url arbitrum_testnet -vvvvvv --account fad --verify --etherscan-api-key XXXXXXXXXXXX --broadcast
+```
+
 ### Build
 
 ```shell
