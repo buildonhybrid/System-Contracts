@@ -205,12 +205,17 @@ contract Nodesale is INodesale, Ownable, Pausable {
     function whitelistBuy(
         uint8 nodeType,
         uint256 amount,
+        uint256 maxAmount,
         INodesale.ReferralCode memory referralCode,
-        bytes32[] calldata proof,
-        bytes32 leaf
+        bytes32[] calldata proof
     ) external whenNotPaused checkSaleState(nodeType, amount) {
-        if (!MerkleProof.verify(proof, merkleRoot, leaf))
-            revert NotWhitelisted();
+        if (
+            !MerkleProof.verify(
+                proof,
+                merkleRoot,
+                keccak256(abi.encode(nodeType, _msgSender(), maxAmount))
+            )
+        ) revert NotWhitelisted();
 
         if (
             userWhitelistNodes[_msgSender()][nodeType] + amount >

@@ -51,15 +51,15 @@ interface INodesale {
     /// @notice Main function for buy nodes in whitelist sale.
     /// @param nodeType Number of the node type.
     /// @param amount Amount of nodes to be bought in one time.
+    /// @param maxAmount Amount of max whitelisted nodes for user.
     /// @param referralCode Referral code which has all attributes for setup discounts.
     /// @param proof Merkle Proofs for verify leafs. 
-    /// @param leaf Leaf from proofs for given user in format encoded "{address}, {amount}".
     function whitelistBuy(
         uint8 nodeType,
         uint256 amount,
+        uint256 maxAmount,
         ReferralCode memory referralCode,
-        bytes32[] calldata proof,
-        bytes32 leaf
+        bytes32[] calldata proof
     ) external;
 
     /// @notice Withdraw collected wrapped ether by owner.

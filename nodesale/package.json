@@ -1,4 +1,6 @@
 {
+  "name": "nodesale",
+  "version": "1.0.0",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/merkle-tree": "^1.0.6"
@@ -8,5 +10,11 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
-  }
+  },
+  "scripts": {
+    "proofs": "ts-node utils/generate-proofs.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

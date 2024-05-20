@@ -8,11 +8,30 @@ const values = [
   ["0xEADe658C09c3d151A83bDf4873433B4a70530D93", "4"],
 ];
 
+// (1)
+const valuesTest = [
+  ["1", "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6", "3"],
+  ["2", "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6", "3"],
+  ["3", "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6", "3"],
+  ["4", "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6", "3"],
+  ["5", "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6", "3"],
+  ["1", "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e", "2"],
+  ["2", "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e", "2"],
+  ["3", "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e", "2"],
+  ["4", "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e", "2"],
+  ["5", "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e", "2"],
+  ["1", "0xA4d4c1f8a763Ef6a0140D04291eCEef913Ffc272", "4"],
+  ["2", "0xA4d4c1f8a763Ef6a0140D04291eCEef913Ffc272", "4"],
+  ["3", "0xA4d4c1f8a763Ef6a0140D04291eCEef913Ffc272", "4"],
+  ["4", "0xA4d4c1f8a763Ef6a0140D04291eCEef913Ffc272", "4"],
+  ["5", "0xA4d4c1f8a763Ef6a0140D04291eCEef913Ffc272", "4"],
+];
+
 // (2)
-const tree = StandardMerkleTree.of(values, ["address", "uint256"]);
+const tree = StandardMerkleTree.of(valuesTest, ["uint8", "address", "uint256"]);
 
 // (3)
 console.log('Merkle Root:', tree.root);
 
 // (4)
-fs.writeFileSync("tree.json", JSON.stringify(tree.dump()));
+fs.writeFileSync("treeFoundry.json", JSON.stringify(tree.dump()));

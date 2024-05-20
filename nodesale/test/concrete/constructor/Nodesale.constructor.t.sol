@@ -173,7 +173,7 @@ contract NodesaleConstructor is NodesaleTest {
         }
         assertEq(nodesale.prices(1), 10);
         assertEq(nodesale.prices(5), 50);
-        assertEq(nodesale.whitelistMax(1), 1);
+        assertEq(nodesale.whitelistMax(1), 4);
         assertEq(nodesale.whitelistMax(5), 5);
     }
 }
