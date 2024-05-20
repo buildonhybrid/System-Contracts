@@ -39,7 +39,7 @@ Main function for buy nodes in public sale.
 
 
 ```solidity
-function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) external;
+function buy(uint8 nodeType, uint256 amount, ReferralCode memory referralCode) external;
 ```
 **Parameters**
 
@@ -47,7 +47,7 @@ function buy(uint8 nodeType, uint256 amount, ReferralCode memory refferalCode) e
 |----|----|-----------|
 |`nodeType`|`uint8`|Number of the node type.|
 |`amount`|`uint256`|Amount of nodes to be bought in one time.|
-|`refferalCode`|`ReferralCode`|Refferal code which has all attributes for setup discounts.|
+|`referralCode`|`ReferralCode`|Referral code which has all attributes for setup discounts.|
 
 
 ### withdraw
@@ -145,7 +145,7 @@ error ExceedsMaxAllowedNodesPerUser();
 ```solidity
 struct ReferralCode {
     address ownerOfReferralCode;
-    bool isWithRefferalCode;
+    bool isWithReferralCode;
     uint16 ownerPercentNumerator;
     uint16 ownerPercentDenominator;
     uint16 discountNumerator;

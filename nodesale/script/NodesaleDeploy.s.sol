@@ -12,13 +12,11 @@ contract NodesaleDeploy is Script {
     uint256[] internal prices = [10, 20, 30, 40, 50];
     uint256[] internal maxAmounts = [10, 10, 10, 10, 10];
     uint256[] internal publicMax = [10, 10, 10, 10, 10];
-    uint256[] internal whitelistMax = [1, 2, 3, 4, 5];
+    uint256[] internal whitelistMax = [5, 5, 5, 5, 5];
 
 
     function run() external {
         vm.startBroadcast();
-    
-        ERC20Sample token = new ERC20Sample();
 
         nodesale = new Nodesale(
             block.timestamp + 1 minutes,
@@ -27,9 +25,9 @@ contract NodesaleDeploy is Script {
             maxAmounts,
             whitelistMax,
             publicMax,
-            token,
+            ERC20Sample(0xD43d68c446f97f462ACC339b32b686E14A0D6Ce8),
             msg.sender,
-            bytes32(0)
+            0x2be8c6891f1218ca14fb9676708d8c698ed3c350f656c37ed1e0614811c17477
         );
 
         vm.stopBroadcast();

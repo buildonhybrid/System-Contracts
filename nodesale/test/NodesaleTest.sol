@@ -17,9 +17,9 @@ contract NodesaleTest is Test {
     uint256[] internal publicMax = [1, 2, 3, 4, 5];
     uint256[] internal whitelistMax = [1, 2, 3, 4, 5];
 
-    INodesale.ReferralCode internal emptyRefferalCode = INodesale.ReferralCode({
+    INodesale.ReferralCode internal emptyReferralCode = INodesale.ReferralCode({
         ownerOfReferralCode: address(0),
-        isWithRefferalCode: false,
+        isWithReferralCode: false,
         ownerPercentNumerator: 0,
         ownerPercentDenominator: 100,
         discountNumerator: 0,
@@ -27,9 +27,9 @@ contract NodesaleTest is Test {
         signature: ""
     });
 
-    INodesale.ReferralCode internal refferalCodeWithoutPercentForOwner;
+    INodesale.ReferralCode internal referralCodeWithoutPercentForOwner;
 
-    INodesale.ReferralCode internal refferalCode;
+    INodesale.ReferralCode internal referralCode;
 
     function fixture() internal {
         weth = new ERC20Sample();
@@ -48,7 +48,7 @@ contract NodesaleTest is Test {
 
         airdrop();
 
-        // setup refferal code without owner percent
+        // setup referral code without owner percent
 
         bytes memory signature;
 
@@ -60,9 +60,9 @@ contract NodesaleTest is Test {
 
         signature = abi.encodePacked(r, s, v);
 
-        refferalCodeWithoutPercentForOwner = INodesale.ReferralCode({
+        referralCodeWithoutPercentForOwner = INodesale.ReferralCode({
             ownerOfReferralCode: address(0),
-            isWithRefferalCode: true,
+            isWithReferralCode: true,
             ownerPercentNumerator: 0,
             ownerPercentDenominator: 100,
             discountNumerator: 10,
@@ -70,7 +70,7 @@ contract NodesaleTest is Test {
             signature: signature
         });
 
-        // setup refferal code with owner percent
+        // setup referral code with owner percent
 
         message = keccak256(abi.encodePacked(carol, uint16(5), uint16(100), uint16(10), uint16(100), uint256(0)));
 
@@ -78,9 +78,9 @@ contract NodesaleTest is Test {
 
         signature = abi.encodePacked(r1, s1, v1);
 
-        refferalCode = INodesale.ReferralCode({
+        referralCode = INodesale.ReferralCode({
             ownerOfReferralCode: carol,
-            isWithRefferalCode: true,
+            isWithReferralCode: true,
             ownerPercentNumerator: 5,
             ownerPercentDenominator: 100,
             discountNumerator: 10,

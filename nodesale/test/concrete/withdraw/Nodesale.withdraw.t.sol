@@ -11,7 +11,7 @@ contract Nodesalewithdraw is NodesaleTest {
         fixture();
 
         vm.prank(alice);
-        nodesale.buy(5, 5, emptyRefferalCode);
+        nodesale.buy(5, 5, emptyReferralCode);
     }
 
     function test_WhenNotOwnerTryToWithdrawTokens() external {

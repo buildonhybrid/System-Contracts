@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-import { INodesale } from "./INodesale.sol";
+import {INodesale} from "./INodesale.sol";
 
 /*
  * @title Nodesale
@@ -15,7 +16,7 @@ import { INodesale } from "./INodesale.sol";
  * @notice Implementation of the smart contract for make sale nodes. There is
  *      opportunity to list a lot of types of node with custom price, max amount to
  *      buy and merkle proofs for whitelist sale. Also there is implemented system
- *      of refferal codes which allows to buy with discounts and percent rewards
+ *      of referral codes which allows to buy with discounts and percent rewards
  *      for reffferal code owner.
  */
 contract Nodesale is INodesale, Ownable, Pausable {
@@ -33,7 +34,7 @@ contract Nodesale is INodesale, Ownable, Pausable {
     /// @notice Address of the Wrapped Ether.
     IERC20 public immutable WETH;
 
-    /// @notice Address of manager who is able to add new refferal codes.
+    /// @notice Address of manager who is able to add new referral codes.
     address public manager;
 
     /// @notice Nonce for invalidate referral codes.
@@ -44,6 +45,9 @@ contract Nodesale is INodesale, Ownable, Pausable {
 
     /// @notice Number of bought nodes from public sale per every user.
     mapping(address => mapping(uint8 => uint256)) public userPublicNodes;
+
+    /// @notice Number of bought nodes from whitelist sale per every user.
+    mapping(address => mapping(uint8 => uint256)) public userWhitelistNodes;
 
     /// @notice Collection of prices for nodes per every type of node.
     mapping(uint8 => uint256) public prices;
@@ -101,7 +105,12 @@ contract Nodesale is INodesale, Ownable, Pausable {
             revert UnacceptableValue();
         }
 
-        if (_price.length == 0 || _maxAmount.length == 0 || _whitelistMax.length == 0 || _publicMax.length == 0) {
+        if (
+            _price.length == 0 ||
+            _maxAmount.length == 0 ||
+            _whitelistMax.length == 0 ||
+            _publicMax.length == 0
+        ) {
             revert UnacceptableValue();
         }
 
@@ -129,18 +138,21 @@ contract Nodesale is INodesale, Ownable, Pausable {
     }
 
     /// @inheritdoc INodesale
-    function buy(uint8 nodeType, uint256 amount, INodesale.ReferralCode memory referralCode)
-        external
-        checkSaleState(nodeType, amount)
-        whenNotPaused
-    {
-        if (userPublicNodes[_msgSender()][nodeType] + amount > publicMax[nodeType]) {
+    function buy(
+        uint8 nodeType,
+        uint256 amount,
+        INodesale.ReferralCode memory referralCode
+    ) external checkSaleState(nodeType, amount) whenNotPaused {
+        if (
+            userPublicNodes[_msgSender()][nodeType] + amount >
+            publicMax[nodeType]
+        ) {
             revert ExceedsMaxAllowedNodesPerUser();
         }
 
         uint256 totalPrice = amount * prices[nodeType];
 
-        if (referralCode.isWithRefferalCode == true) {
+        if (referralCode.isWithReferralCode == true) {
             address signatureSigner = ECDSA.recover(
                 keccak256(
                     abi.encodePacked(
@@ -156,14 +168,22 @@ contract Nodesale is INodesale, Ownable, Pausable {
             );
 
             if (signatureSigner == manager) {
-                uint256 discount = (totalPrice * referralCode.discountNumerator) / referralCode.discountDenominator;
+                // TODO: revert if isWithReferralCode = true but signer != manager.
+                uint256 discount = (totalPrice *
+                    referralCode.discountNumerator) /
+                    referralCode.discountDenominator;
                 uint256 ownerPercent;
 
                 if (referralCode.ownerOfReferralCode != address(0)) {
                     ownerPercent =
-                        (totalPrice * referralCode.ownerPercentNumerator) / referralCode.ownerPercentDenominator;
+                        (totalPrice * referralCode.ownerPercentNumerator) /
+                        referralCode.ownerPercentDenominator;
 
-                    WETH.safeTransferFrom(_msgSender(), referralCode.ownerOfReferralCode, ownerPercent);
+                    WETH.safeTransferFrom(
+                        _msgSender(),
+                        referralCode.ownerOfReferralCode,
+                        ownerPercent
+                    );
                 }
 
                 totalPrice = totalPrice - discount - ownerPercent;
@@ -176,6 +196,74 @@ contract Nodesale is INodesale, Ownable, Pausable {
             totalNodesSold[nodeType] += amount;
 
             userPublicNodes[_msgSender()][nodeType] += amount;
+        }
+
+        emit Bought(_msgSender(), referralCode, amount, totalPrice);
+    }
+
+    /// @inheritdoc INodesale
+    function whitelistBuy(
+        uint8 nodeType,
+        uint256 amount,
+        INodesale.ReferralCode memory referralCode,
+        bytes32[] calldata proof,
+        bytes32 leaf
+    ) external whenNotPaused checkSaleState(nodeType, amount) {
+        if (!MerkleProof.verify(proof, merkleRoot, leaf))
+            revert NotWhitelisted();
+
+        if (
+            userWhitelistNodes[_msgSender()][nodeType] + amount >
+            whitelistMax[nodeType]
+        ) {
+            revert ExceedsMaxAllowedNodesPerUser();
+        }
+
+        uint256 totalPrice = amount * prices[nodeType];
+
+        if (referralCode.isWithReferralCode == true) {
+            address signatureSigner = ECDSA.recover(
+                keccak256(
+                    abi.encodePacked(
+                        referralCode.ownerOfReferralCode,
+                        referralCode.ownerPercentNumerator,
+                        referralCode.ownerPercentDenominator,
+                        referralCode.discountNumerator,
+                        referralCode.discountDenominator,
+                        referralCodeNonce
+                    )
+                ),
+                referralCode.signature
+            );
+
+            if (signatureSigner == manager) {
+                uint256 discount = (totalPrice *
+                    referralCode.discountNumerator) /
+                    referralCode.discountDenominator;
+                uint256 ownerPercent;
+
+                if (referralCode.ownerOfReferralCode != address(0)) {
+                    ownerPercent =
+                        (totalPrice * referralCode.ownerPercentNumerator) /
+                        referralCode.ownerPercentDenominator;
+
+                    WETH.safeTransferFrom(
+                        _msgSender(),
+                        referralCode.ownerOfReferralCode,
+                        ownerPercent
+                    );
+                }
+
+                totalPrice = totalPrice - discount - ownerPercent;
+            }
+        }
+
+        WETH.safeTransferFrom(_msgSender(), address(this), totalPrice);
+
+        unchecked {
+            totalNodesSold[nodeType] += amount;
+
+            userWhitelistNodes[_msgSender()][nodeType] += amount;
         }
 
         emit Bought(_msgSender(), referralCode, amount, totalPrice);
