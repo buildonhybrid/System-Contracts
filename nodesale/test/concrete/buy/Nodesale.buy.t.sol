@@ -11,12 +11,6 @@ contract Nodesalebuy is NodesaleTest {
         fixture();
     }
 
-    modifier validateNodeType(uint8 nodeType) {
-        vm.assume(nodeType <= 5);
-        vm.assume(nodeType != 0);
-        _;
-    }
-
     function test_WhenNodeTypeIsNotExist() external {
         vm.startPrank(alice);
 

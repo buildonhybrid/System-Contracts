@@ -1,0 +1,43 @@
+Nodesale.whitelist-buy
+├── when node type is not exist
+│   └── it reverts
+├── when amount is zero
+│   └── it reverts
+├── when amount is higher than max buy for user
+│   └── it reverts
+├── when amount is higher than max allowed nodes to buy
+│   └── it reverts
+├── when user doesn't have enough wrapped ether for buy nodes
+│   └── it reverts
+├── when user try to purchase before sale starts
+│   ├── it reverts
+│   └── it reverts
+├── when proofs are wrong
+│   └── it reverts
+├── when max amount for user is wrong
+│   └── it reverts
+├── when user buy nodes without referral code
+│   ├── it emits
+│   ├── it user balance reduced by total price
+│   ├── it contract balance increased
+│   ├── it total amount of bought nodes increased
+│   └── it bought nodes for user in whitelist sale increased
+├── when user buy with referral code with discount but without percent for owner
+│   ├── it emits
+│   ├── it user balance reduced by total price minus discount
+│   ├── it contract balance increased
+│   ├── it total amount of bought nodes increased
+│   └── it bought nodes for user in whitelist sale increased
+├── when user buy with referral code with discount and with percent for owner
+│   ├── it emits
+│   ├── it user balance reduced by total price minus discount and owner commission
+│   ├── it referral code owner get commission
+│   ├── it contract balance increased
+│   ├── it total amount of bought nodes increased
+│   └── it bought nodes for user in whitelist sale increased
+└── when user try to buy with referral code which is not correct
+    ├── it emits
+    ├──it user balance reduced by total price without discount
+    ├── it contract balance increased
+    ├── it total amount of bought nodes increased
+    └── it bought nodes for user in whitelist sale increased

@@ -210,19 +210,20 @@ contract Nodesale is INodesale, Ownable, Pausable {
         bytes32[] calldata proof
     ) external whenNotPaused checkSaleState(nodeType, amount) {
         if (
+            userWhitelistNodes[_msgSender()][nodeType] + amount >
+            whitelistMax[nodeType] ||
+            userWhitelistNodes[_msgSender()][nodeType] + amount > maxAmount
+        ) {
+            revert ExceedsMaxAllowedNodesPerUser();
+        }
+
+        if (
             !MerkleProof.verify(
                 proof,
                 merkleRoot,
                 keccak256(abi.encode(nodeType, _msgSender(), maxAmount))
             )
         ) revert NotWhitelisted();
-
-        if (
-            userWhitelistNodes[_msgSender()][nodeType] + amount >
-            whitelistMax[nodeType]
-        ) {
-            revert ExceedsMaxAllowedNodesPerUser();
-        }
 
         uint256 totalPrice = amount * prices[nodeType];
 
