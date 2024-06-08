@@ -1,0 +1,8 @@
+Hybots.mint
+├── when not minter try to mint
+│   └── it reverts
+├── when minter try to mint to address zero
+│   └── it reverts
+└── when minter minted nft to user
+    ├── it emits
+    └── it user balance increased

@@ -1,0 +1,8 @@
+Hybots.contructor
+├── when default admin equals address zero
+│   └── it revert
+├── when minter equals address zero
+│   └── it reverts
+└── when everything is correct
+    ├── it roles are set
+    └── it state is updated

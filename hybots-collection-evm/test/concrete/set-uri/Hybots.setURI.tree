@@ -1,0 +1,6 @@
+Hybots.setURI
+├── when caller is not admin
+│   └── it reverts
+└── when caller is admin
+    ├── it emits
+    └── it uri is updated

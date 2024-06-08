@@ -16,10 +16,25 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
+    /// @notice Emits when single nft was minted to user.
+    event Minted(address to, uint256 id, uint256 amount, bytes data);
+
+    /// @notice Emits when batch of nfts were minted to user.
+    event BatchMinted(address to, uint256[] ids, uint256[] amounts, bytes data);
+
+    /// @notice Emits when base uri to metadata is updated.
+    event BaseURIUpdated(string newUri);
+
+    error UnaceptableValue();
+
     /// @param defaultAdmin Address which will be has permissions to execute main functions like set Uri or grant/revoke roles.
     /// @param minter Address which will be able to mint new tokens.
     /// @param baseUri Base uri to metadata storage for whole collection.
     constructor(address defaultAdmin, address minter, string memory baseUri) ERC1155(baseUri) {
+        if (defaultAdmin == address(0) || minter == address(0)) {
+            revert UnaceptableValue();
+        }
+
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
     }
@@ -29,6 +44,8 @@ contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
     /// @param newUri New uri to metadata storage.
     function setURI(string memory newUri) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _setURI(newUri);
+
+        emit BaseURIUpdated(newUri);
     }
 
     /// @notice Mint new nft to certain user with selected id and amount.
@@ -38,6 +55,8 @@ contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
     /// @param data Bytes with which nft will be minted.
     function mint(address to, uint256 id, uint256 amount, bytes memory data) public onlyRole(MINTER_ROLE) {
         _mint(to, id, amount, data);
+
+        emit Minted(to, id, amount, data);
     }
 
     /// @notice Mint a batch of new nfts to certain user with selected id and amount.
@@ -50,6 +69,8 @@ contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
         onlyRole(MINTER_ROLE)
     {
         _mintBatch(to, ids, amounts, data);
+
+        emit BatchMinted(to, ids, amounts, data);
     }
 
     /// @notice Returns uri to metadata for given tokenId.
