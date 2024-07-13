@@ -11,7 +11,7 @@ contract HybotssetURI is HybotsTest {
         fixture();
 
         vm.prank(chuck);
-        nft.mint(chuck);
+        nft.mint(chuck, Hybots.Rarity.gold);
     }
 
     function test_WhenCallerIsNotAdmin() external {

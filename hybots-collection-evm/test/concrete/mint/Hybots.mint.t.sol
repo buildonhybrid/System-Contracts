@@ -19,7 +19,7 @@ contract HybotsMint is HybotsTest {
         vm.expectRevert(
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, alice, nft.MINTER_ROLE())
         );
-        nft.mint(alice);
+        nft.mint(alice, Hybots.Rarity.gold);
     }
 
     function test_WhenMinterTryToMintToAddressZero() external {
@@ -27,7 +27,7 @@ contract HybotsMint is HybotsTest {
 
         // it reverts
         vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721InvalidReceiver.selector, address(0)));
-        nft.mint(address(0));
+        nft.mint(address(0), Hybots.Rarity.silver);
     }
 
     function test_WhenMinterMintedNftToUser() external {
@@ -38,7 +38,7 @@ contract HybotsMint is HybotsTest {
         vm.expectEmit(true, true, true, true);
         emit Hybots.Minted(alice, 0);
 
-        nft.mint(alice);
+        nft.mint(alice, Hybots.Rarity.bronze);
 
         // it user balance increased
         assertEq(userBalanceBefore + 1, nft.balanceOf(alice));

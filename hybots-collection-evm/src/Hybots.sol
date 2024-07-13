@@ -20,6 +20,14 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
 
     string public baseUri;
 
+    enum Rarity {
+        bronze,
+        silver,
+        gold
+    }
+
+    mapping(uint256 => Rarity) public rarities;
+
     /// @notice Emits when single nft was minted to user.
     event Minted(address to, uint256 tokenId);
 
@@ -64,9 +72,11 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
 
     /// @notice Mint new nft to certain user.
     /// @param to User which will get new minted nft.
-    function mint(address to) public onlyRole(MINTER_ROLE) {
+    function mint(address to, Rarity rarity) public onlyRole(MINTER_ROLE) {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
+
+        rarities[tokenId] = rarity;
 
         emit Minted(to, tokenId);
     }

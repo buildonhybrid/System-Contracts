@@ -23,7 +23,7 @@ contract Hybotscontructor is HybotsTest {
         nft = new Hybots(bob, alice, "example.com/");
 
         vm.prank(alice);
-        nft.mint(chuck);
+        nft.mint(chuck, Hybots.Rarity.bronze);
 
         // it roles are set
         assertEq(nft.hasRole(0x00, bob), true);
