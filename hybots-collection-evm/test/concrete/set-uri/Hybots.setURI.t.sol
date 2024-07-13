@@ -9,6 +9,9 @@ import { Hybots } from "src/Hybots.sol";
 contract HybotssetURI is HybotsTest {
     function setUp() external {
         fixture();
+
+        vm.prank(chuck);
+        nft.mint(chuck);
     }
 
     function test_WhenCallerIsNotAdmin() external {
@@ -20,7 +23,7 @@ contract HybotssetURI is HybotsTest {
                 IAccessControl.AccessControlUnauthorizedAccount.selector, alice, nft.DEFAULT_ADMIN_ROLE()
             )
         );
-        nft.setURI("example.com/test/");
+        nft.updateBaseURI("example.com/test/");
     }
 
     function test_WhenCallerIsAdmin() external {
@@ -30,9 +33,9 @@ contract HybotssetURI is HybotsTest {
         vm.expectEmit(true, true, true, true);
         emit Hybots.BaseURIUpdated("example.com/test/");
 
-        nft.setURI("example.com/test/");
+        nft.updateBaseURI("example.com/test/");
 
         // it uri is updated
-        assertEq(nft.uri(1), "example.com/test/1.json");
+        assertEq(nft.tokenURI(0), "example.com/test/0.json");
     }
 }

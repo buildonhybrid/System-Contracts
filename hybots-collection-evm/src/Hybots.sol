@@ -1,26 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import { ERC1155 } from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC1155Burnable } from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { ERC721URIStorage } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import { ERC721Burnable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 /*
- * @title Nybots NFT collection.
+ * @title Hybots NFT collection.
  * @author Cowchain
  * @notice Implementation of the NFT collection using ERC1155 standart with
  * metadata uri for every tokenId, burning by user and minting tokens by
  * Minter role for allow bridge tokens between different chains.
  */
-contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
+contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    /// @notice Emits when single nft was minted to user.
-    event Minted(address to, uint256 id, uint256 amount, bytes data);
+    uint256 private _nextTokenId;
 
-    /// @notice Emits when batch of nfts were minted to user.
-    event BatchMinted(address to, uint256[] ids, uint256[] amounts, bytes data);
+    string public baseUri;
+
+    /// @notice Emits when single nft was minted to user.
+    event Minted(address to, uint256 tokenId);
 
     /// @notice Emits when base uri to metadata is updated.
     event BaseURIUpdated(string newUri);
@@ -29,58 +30,54 @@ contract Hybots is ERC1155, AccessControl, ERC1155Burnable {
 
     /// @param defaultAdmin Address which will be has permissions to execute main functions like set Uri or grant/revoke roles.
     /// @param minter Address which will be able to mint new tokens.
-    /// @param baseUri Base uri to metadata storage for whole collection.
-    constructor(address defaultAdmin, address minter, string memory baseUri) ERC1155(baseUri) {
+    /// @param baseUri_ Base uri to metadata storage for whole collection.
+    constructor(address defaultAdmin, address minter, string memory baseUri_) ERC721("HybotsCollection", "HYB") {
         if (defaultAdmin == address(0) || minter == address(0)) {
             revert UnaceptableValue();
         }
 
+        baseUri = baseUri_;
+
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
+
+        emit BaseURIUpdated(baseUri_);
     }
 
-    /// @notice Updates based uri to metadata storage.
-    /// @dev Can be executed only by admin.
-    /// @param newUri New uri to metadata storage.
-    function setURI(string memory newUri) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setURI(newUri);
+    /// @notice Updates the baseURI.
+    /// @param baseURI_ New value for baseURI.
+    function updateBaseURI(string memory baseURI_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        baseUri = baseURI_;
 
-        emit BaseURIUpdated(newUri);
+        emit BaseURIUpdated(baseURI_);
     }
 
-    /// @notice Mint new nft to certain user with selected id and amount.
+    /// @notice Returns the base uri for collection.
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseUri;
+    }
+
+    /// @inheritdoc ERC721
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return string.concat(super.tokenURI(tokenId), ".json");
+    }
+
+    /// @notice Mint new nft to certain user.
     /// @param to User which will get new minted nft.
-    /// @param id Id of the nft type which will be minted.
-    /// @param amount Amount of nfts which will be minted.
-    /// @param data Bytes with which nft will be minted.
-    function mint(address to, uint256 id, uint256 amount, bytes memory data) public onlyRole(MINTER_ROLE) {
-        _mint(to, id, amount, data);
+    function mint(address to) public onlyRole(MINTER_ROLE) {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
 
-        emit Minted(to, id, amount, data);
-    }
-
-    /// @notice Mint a batch of new nfts to certain user with selected id and amount.
-    /// @param to User which will get new minted nft.
-    /// @param ids Collection of the ids which represent types of nft.
-    /// @param amounts Collection of amounts which will be minted to user.
-    /// @param data Bytes with which nft will be minted.
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        public
-        onlyRole(MINTER_ROLE)
-    {
-        _mintBatch(to, ids, amounts, data);
-
-        emit BatchMinted(to, ids, amounts, data);
-    }
-
-    /// @notice Returns uri to metadata for given tokenId.
-    /// @param tokenId Id of the token for get uri.
-    function uri(uint256 tokenId) public view override returns (string memory) {
-        return string(abi.encodePacked(super.uri(tokenId), Strings.toString(tokenId), ".json"));
+        emit Minted(to, tokenId);
     }
 
     /// @dev The following function is overrides required by Solidity.
-    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, AccessControl, ERC721URIStorage)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 }

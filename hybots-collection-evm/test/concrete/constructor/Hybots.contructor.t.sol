@@ -22,11 +22,14 @@ contract Hybotscontructor is HybotsTest {
     function test_WhenEverythingIsCorrect() external {
         nft = new Hybots(bob, alice, "example.com/");
 
+        vm.prank(alice);
+        nft.mint(chuck);
+
         // it roles are set
         assertEq(nft.hasRole(0x00, bob), true);
         assertEq(nft.hasRole(nft.MINTER_ROLE(), alice), true);
 
         // it state is updated
-        assertEq(nft.uri(1), "example.com/1.json");
+        assertEq(nft.tokenURI(0), "example.com/0.json");
     }
 }
