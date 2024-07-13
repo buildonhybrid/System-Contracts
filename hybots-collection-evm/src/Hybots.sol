@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC721URIStorage } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import { ERC721Burnable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {ERC721Burnable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 /*
  * @title Hybots NFT collection.
@@ -13,7 +14,13 @@ import { ERC721Burnable } from "@openzeppelin/contracts/token/ERC721/extensions/
  * metadata uri for every tokenId, burning by user and minting tokens by
  * Minter role for allow bridge tokens between different chains.
  */
-contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
+contract Hybots is
+    ERC721,
+    ERC721Enumerable,
+    AccessControl,
+    ERC721URIStorage,
+    ERC721Burnable
+{
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     uint256 private _nextTokenId;
@@ -39,7 +46,11 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
     /// @param defaultAdmin Address which will be has permissions to execute main functions like set Uri or grant/revoke roles.
     /// @param minter Address which will be able to mint new tokens.
     /// @param baseUri_ Base uri to metadata storage for whole collection.
-    constructor(address defaultAdmin, address minter, string memory baseUri_) ERC721("HybotsCollection", "HYB") {
+    constructor(
+        address defaultAdmin,
+        address minter,
+        string memory baseUri_
+    ) ERC721("HybotsCollection", "HYB") {
         if (defaultAdmin == address(0) || minter == address(0)) {
             revert UnaceptableValue();
         }
@@ -54,7 +65,9 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
 
     /// @notice Updates the baseURI.
     /// @param baseURI_ New value for baseURI.
-    function updateBaseURI(string memory baseURI_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updateBaseURI(
+        string memory baseURI_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         baseUri = baseURI_;
 
         emit BaseURIUpdated(baseURI_);
@@ -66,7 +79,9 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
     }
 
     /// @inheritdoc ERC721
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return string.concat(super.tokenURI(tokenId), ".json");
     }
 
@@ -81,11 +96,30 @@ contract Hybots is ERC721, AccessControl, ERC721URIStorage, ERC721Burnable {
         emit Minted(to, tokenId);
     }
 
-    /// @dev The following function is overrides required by Solidity.
-    function supportsInterface(bytes4 interfaceId)
+    /// @dev The following functions are overrides required by Solidity.
+    // The following functions are overrides required by Solidity.
+
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    ) internal override(ERC721, ERC721Enumerable) returns (address) {
+        return super._update(to, tokenId, auth);
+    }
+
+    function _increaseBalance(
+        address account,
+        uint128 value
+    ) internal override(ERC721, ERC721Enumerable) {
+        super._increaseBalance(account, value);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
-        override(ERC721, AccessControl, ERC721URIStorage)
+        override(ERC721, AccessControl, ERC721URIStorage, ERC721Enumerable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
