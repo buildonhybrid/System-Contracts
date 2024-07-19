@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-import { HybotsTest } from "test/HybotsTest.sol";
-import { Hybots } from "src/Hybots.sol";
+import {HybotsTest} from "test/HybotsTest.sol";
+import {Hybots} from "src/Hybots.sol";
 
 contract HybotssetURI is HybotsTest {
     function setUp() external {
         fixture();
 
         vm.prank(chuck);
-        nft.mint(chuck, Hybots.Rarity.gold);
+        nft.mint(chuck, "gold");
     }
 
     function test_WhenCallerIsNotAdmin() external {
@@ -20,7 +20,9 @@ contract HybotssetURI is HybotsTest {
         // it reverts
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, alice, nft.DEFAULT_ADMIN_ROLE()
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                alice,
+                nft.DEFAULT_ADMIN_ROLE()
             )
         );
         nft.updateBaseURI("example.com/test/");

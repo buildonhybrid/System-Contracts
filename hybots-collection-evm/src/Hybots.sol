@@ -27,13 +27,11 @@ contract Hybots is
 
     string public baseUri;
 
-    enum Rarity {
-        bronze,
-        silver,
-        gold
-    }
+    /// @notice Mapping of allowed rarities.
+    mapping(string => bool) isAllowedRarity;
 
-    mapping(uint256 => Rarity) public rarities;
+    /// @notice Mapping of rarities.
+    mapping(uint256 => string) public rarities;
 
     /// @notice Emits when single nft was minted to user.
     event Minted(address to, uint256 tokenId);
@@ -87,13 +85,27 @@ contract Hybots is
 
     /// @notice Mint new nft to certain user.
     /// @param to User which will get new minted nft.
-    function mint(address to, Rarity rarity) public onlyRole(MINTER_ROLE) {
+    function mint(address to, string calldata rarity) public onlyRole(MINTER_ROLE) {
+        if (!isAllowedRarity[rarity]) {
+            revert UnaceptableValue();
+        }
+
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
 
         rarities[tokenId] = rarity;
 
         emit Minted(to, tokenId);
+    }
+
+    /// @notice Add new rarity to collection.
+    function addRarity(string memory rarity) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        isAllowedRarity[rarity] = true;
+    }
+
+    /// @notice Remove rarity from collection.
+    function removeRarity(string memory rarity) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        isAllowedRarity[rarity] = false;
     }
 
     /// @dev The following functions are overrides required by Solidity.
