@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { IERC721Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import {HybotsStaking} from "src/HybotsStaking.sol";
-import {HybotsStakingTest} from "test/HybotsStakingTest.sol";
+import { HybotsStaking } from "src/HybotsStaking.sol";
+import { HybotsStakingTest } from "test/HybotsStakingTest.sol";
 
-contract HybotsStakingstake is HybotsStakingTest {
-
+contract HybotsStakingStake is HybotsStakingTest {
     function setUp() public {
         fixture();
     }
@@ -24,7 +23,7 @@ contract HybotsStakingstake is HybotsStakingTest {
         uint256 lockedTokensBefore = staking.numberOfLockedTokens();
 
         // it emits
-        vm.expectEmit(true, true, true,true);
+        vm.expectEmit(true, true, true, true);
         emit HybotsStaking.Staked(alice, 1);
 
         vm.prank(alice);

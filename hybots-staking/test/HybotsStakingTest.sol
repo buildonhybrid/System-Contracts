@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {Test} from "./Test.sol";
-import {HybotsStaking} from "src/HybotsStaking.sol";
-import {ERC721Mock} from "test/mocks/ERC721Mock.sol";
+import { Test } from "./Test.sol";
+import { HybotsStaking } from "src/HybotsStaking.sol";
+import { ERC721Mock } from "test/mocks/ERC721Mock.sol";
 
 contract HybotsStakingTest is Test {
     HybotsStaking internal staking;
@@ -19,7 +19,7 @@ contract HybotsStakingTest is Test {
     }
 
     function airdropNFTs() public {
-        for (uint i = 0; i < actors.length; i++) {
+        for (uint256 i = 0; i < actors.length; i++) {
             vm.prank(deployer);
             nft.safeMint(actors[i]);
 
