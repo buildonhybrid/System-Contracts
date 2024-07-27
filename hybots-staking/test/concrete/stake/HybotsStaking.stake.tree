@@ -1,0 +1,8 @@
+HybotsStaking.stake
+├── when not nft owner try to lock nft
+│   └── it reverts
+└── when nft is locked by owner
+    ├── it emits
+    ├── it user balance reduced
+    ├── it owner of nft is contract
+    └── it tokenId written to user in contract

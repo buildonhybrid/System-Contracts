@@ -19,10 +19,12 @@ contract HybotsStakingTest is Test {
     }
 
     function airdropNFTs() public {
-        vm.startPrank(deployer);
         for (uint i = 0; i < actors.length; i++) {
+            vm.prank(deployer);
             nft.safeMint(actors[i]);
+
+            vm.prank(actors[i]);
+            nft.setApprovalForAll(address(staking), true);
         }
-        vm.stopPrank();
     }
 }
