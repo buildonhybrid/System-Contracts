@@ -10,3 +10,6 @@
 [submodule "hybots-collection-evm/lib/forge-std"]
 	path = hybots-collection-evm/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "hybots-staking/lib/forge-std"]
+	path = hybots-staking/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
