@@ -33,7 +33,7 @@ contract HybotsStakingStake is HybotsStakingTest {
         assertEq(address(staking), nft.ownerOf(1));
 
         // it tokenId written to user in contract
-        assertEq(staking.nftOwnersByTokenId(1), alice);
+        assertEq(staking.nftOwnerByTokenId(1), alice);
         staking.getAllStakedTokensByOwner(alice);
 
         // it number of locked tokens increased

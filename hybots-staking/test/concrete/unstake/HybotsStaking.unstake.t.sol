@@ -38,7 +38,7 @@ contract HybotsStakingUnstake is HybotsStakingTest {
         assertEq(alice, nft.ownerOf(1));
 
         // it staker of given nft equals zero after unstake
-        assertEq(staking.nftOwnersByTokenId(1), address(0));
+        assertEq(staking.nftOwnerByTokenId(1), address(0));
 
         // it tokenId removed from list of staked tokens by user
         assertEq(staking.getAllStakedTokensByOwner(alice).length, 0);
