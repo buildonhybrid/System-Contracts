@@ -1,19 +1,6 @@
-## Foundry
+## Hybots Staking Smart Contract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
+## Project Usage
 
 ### Build
 
@@ -33,34 +20,210 @@ $ forge test
 $ forge fmt
 ```
 
-### Gas Snapshots
+## Docs
 
-```shell
-$ forge snapshot
+[Git Source](https://github.com/buildonhybrid/System-Contracts/blob/ecc0b91b2acdac9dddf1d2205743220548909118/src/HybotsStaking.sol)
+
+**Inherits:**
+Ownable, IERC721Receiver
+
+
+## State Variables
+### hybotsCollection
+address of Hybots nft collection.
+
+
+```solidity
+IERC721 public hybotsCollection;
 ```
 
-### Anvil
 
-```shell
-$ anvil
+### numberOfLockedTokens
+number of total locked hybots nfts.
+
+
+```solidity
+uint32 public numberOfLockedTokens;
 ```
 
-### Deploy
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+### nftOwnerByTokenId
+collection of tokenIds staked by users.
+
+
+```solidity
+mapping(uint256 tokenId => address owner) public nftOwnerByTokenId;
 ```
 
-### Cast
 
-```shell
-$ cast <subcommand>
+### stakedTokensByOwner
+collection of nfts staked by user.
+
+
+```solidity
+mapping(address owner => EnumerableSet.UintSet ids) internal stakedTokensByOwner;
 ```
 
-### Help
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+## Functions
+### constructor
+
+
+```solidity
+constructor(IERC721 hybotsCollection_, address initialOwner) Ownable(initialOwner);
 ```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`hybotsCollection_`|`IERC721`|address of the hybots nft collection.|
+|`initialOwner`|`address`|address of the contractOwner.|
+
+
+### stake
+
+main function for stake nft by user.
+
+
+```solidity
+function stake(uint256 tokenId) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`tokenId`|`uint256`|id of the nft which will be staked.|
+
+
+### unstake
+
+function for unstake nft by user.
+
+
+```solidity
+function unstake(uint256 tokenId) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`tokenId`|`uint256`|id of the nft which will be unstaked.|
+
+
+### withdrawETH
+
+withdraw native coin and transfer it to owner.
+
+
+```solidity
+function withdrawETH() external onlyOwner;
+```
+
+### withdrawToken
+
+withdraw tokens and transfer it to owner.
+
+
+```solidity
+function withdrawToken(IERC20 token, uint256 amount) external onlyOwner;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`token`|`IERC20`|address of the token which will be withdrawn.|
+|`amount`|`uint256`|amount of token which will be withdrawn in wei.|
+
+
+### getAllStakedTokensByOwner
+
+returns all ids of staked nfts by given user.
+
+
+```solidity
+function getAllStakedTokensByOwner(address owner_) public view returns (uint256[] memory ids);
+```
+
+### onERC721Received
+
+
+```solidity
+function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4);
+```
+
+## Events
+### Staked
+emits when user staken nft.
+
+
+```solidity
+event Staked(address owner, uint256 tokenId);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`owner`|`address`|address of user which staked nft.|
+|`tokenId`|`uint256`|id of the staked nft.|
+
+### Unstaked
+emits when user unstake his nft.
+
+
+```solidity
+event Unstaked(address owner, uint256 tokenId);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`owner`|`address`|address of user which staked nft.|
+|`tokenId`|`uint256`|id of the staked nft.|
+
+### ETHWithdrawn
+emits when owner withdrawn native coin from contract.
+
+
+```solidity
+event ETHWithdrawn(address to, uint256 amount);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`to`|`address`|address of the eth receiver, it is always `owner`.|
+|`amount`|`uint256`|amount of withdraw eth in wei.|
+
+### TokenWithdrawn
+emits when owner erc20 tokens from contract.
+
+
+```solidity
+event TokenWithdrawn(IERC20 token, address to, uint256 amount);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`token`|`IERC20`|address of the erc20 token which was withdrawn.|
+|`to`|`address`|address of the eth receiver, it is always `owner`.|
+|`amount`|`uint256`|amount of withdraw token in wei.|
+
+## Errors
+### UnaceptableValue
+
+```solidity
+error UnaceptableValue();
+```
+
+### NotOwnerOfStakedToken
+
+```solidity
+error NotOwnerOfStakedToken(uint256 tokenId);
+```
+
+

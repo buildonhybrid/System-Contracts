@@ -1,0 +1,7 @@
+HybotsStaking.withdraw-eth
+├── when not owner try to withdraw eth
+│   └── it reverts
+└── when owner try to withdraw eth
+    ├── it emits
+    ├── it owner balance increased
+    └── it contract balance reduced

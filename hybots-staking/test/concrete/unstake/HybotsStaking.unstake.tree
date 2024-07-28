@@ -1,0 +1,9 @@
+HybotsStaking.unstake
+├── when not token owner tries to unstake it
+│   └── it reverts
+└── when user unstaked his token
+    ├── it emits
+    ├── it owner of nft is equals user address
+    ├── it staker of given nft equals zero after unstake
+    ├── it tokenId removed from list of staked tokens by user
+    └── it number of staked tokens reduced
