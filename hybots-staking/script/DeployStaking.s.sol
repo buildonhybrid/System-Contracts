@@ -8,7 +8,7 @@ import {Script, console} from "forge-std/Script.sol";
 import {HybotsStaking} from "src/HybotsStaking.sol";
 
 contract DeployStaking is Script {
-    IERC721 hybotsCollection = IERC721(address(0)); // TODO: replace `address(0)` with collection address before deploy.
+    IERC721 hybotsCollection = IERC721(0xCAEfBf06A2a964303dc33a013DcD48784429F879); // TODO: replace `address(0)` with collection address before deploy.
     function run() public {
         vm.startBroadcast();
 

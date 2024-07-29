@@ -24,6 +24,9 @@ contract HybotsStaking is Ownable, IERC721Receiver {
     /// @notice number of total locked hybots nfts.
     uint32 public numberOfLockedTokens;
 
+    /// @notice is users able to unstake their nfts or no.
+    bool public isUnstakeAvailable;
+
     /// @notice collection of tokenIds staked by users.
     mapping(uint256 tokenId => address owner) public nftOwnerByTokenId;
 
@@ -53,6 +56,8 @@ contract HybotsStaking is Ownable, IERC721Receiver {
 
     error UnaceptableValue();
 
+    error UnstakeIsNotPossibleAtThatMoment();
+
     error NotOwnerOfStakedToken(uint256 tokenId);
 
     /// @param hybotsCollection_ address of the hybots nft collection.
@@ -61,6 +66,8 @@ contract HybotsStaking is Ownable, IERC721Receiver {
         if (address(hybotsCollection_) == address(0)) revert UnaceptableValue();
 
         hybotsCollection = hybotsCollection_;
+
+        isUnstakeAvailable = false;
     }
 
     /// @notice main function for stake nft by user. 
@@ -81,10 +88,13 @@ contract HybotsStaking is Ownable, IERC721Receiver {
 
     /// @notice function for unstake nft by user. 
     /// @param tokenId id of the nft which will be unstaked.
+    /// @dev possible only if `isUnstakeAvailable` equals true.
     function unstake(uint256 tokenId) external {
         address sender = _msgSender();
 
         if (nftOwnerByTokenId[tokenId] != sender) revert NotOwnerOfStakedToken(tokenId);
+
+        if(isUnstakeAvailable != true) revert UnstakeIsNotPossibleAtThatMoment();
 
         hybotsCollection.safeTransferFrom(address(this), sender, tokenId);
 
@@ -95,6 +105,11 @@ contract HybotsStaking is Ownable, IERC721Receiver {
         stakedTokensByOwner[sender].remove(tokenId);
 
         emit Unstaked(sender, tokenId);
+    }
+
+    /// @notice owner can enable unstaking for all users.
+    function allowUnstake() external onlyOwner {
+        isUnstakeAvailable = true;
     }
 
     /// @notice withdraw native coin and transfer it to owner.

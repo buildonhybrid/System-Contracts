@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import { IERC721Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import { HybotsStaking } from "src/HybotsStaking.sol";
-import { HybotsStakingTest } from "test/HybotsStakingTest.sol";
+import {HybotsStaking} from "src/HybotsStaking.sol";
+import {HybotsStakingTest} from "test/HybotsStakingTest.sol";
 
 contract HybotsStakingUnstake is HybotsStakingTest {
     function setUp() public {
@@ -18,7 +18,12 @@ contract HybotsStakingUnstake is HybotsStakingTest {
         vm.startPrank(bob);
 
         // it reverts
-        vm.expectRevert(abi.encodeWithSelector(HybotsStaking.NotOwnerOfStakedToken.selector, 1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                HybotsStaking.NotOwnerOfStakedToken.selector,
+                1
+            )
+        );
         staking.unstake(1);
     }
 
@@ -26,6 +31,9 @@ contract HybotsStakingUnstake is HybotsStakingTest {
         uint256 lockedTokensBefore = staking.numberOfLockedTokens();
 
         assertEq(staking.getAllStakedTokensByOwner(alice).length, 1);
+
+        vm.prank(deployer);
+        staking.allowUnstake();
 
         // it emits
         vm.expectEmit(true, true, true, true);
@@ -45,5 +53,15 @@ contract HybotsStakingUnstake is HybotsStakingTest {
 
         // it number of staked tokens reduced
         assertEq(lockedTokensBefore - 1, staking.numberOfLockedTokens());
+    }
+
+    function test_WhenUnstakeIsNotAllowed() external {
+        // it reverts
+
+        vm.expectRevert(
+            HybotsStaking.UnstakeIsNotPossibleAtThatMoment.selector
+        );
+        vm.prank(alice);
+        staking.unstake(1);
     }
 }
